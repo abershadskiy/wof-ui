@@ -1,0 +1,13 @@
+/CLAUDE.md
+/.idea/
+
+logs
+*.log
+npm-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+.env.local
+.DS_Store

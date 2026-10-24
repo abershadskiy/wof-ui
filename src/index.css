@@ -1,0 +1,130 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --color-space-950: #05060f;
+  --color-space-900: #0b0d1f;
+  --color-space-800: #151936;
+  --color-nebula: #a78bfa;
+  --color-comet: #fbbf24;
+  --color-plasma: #f472b6;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-space-950);
+  color: #e5e7ff;
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+
+.glass {
+  background: color-mix(in oklab, var(--color-space-900) 78%, transparent);
+  backdrop-filter: blur(14px);
+  border: 1px solid color-mix(in oklab, var(--color-nebula) 22%, transparent);
+  box-shadow: 0 0 40px -12px color-mix(in oklab, var(--color-nebula) 45%, transparent);
+}
+
+.globe-pin {
+  position: relative;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.globe-pin svg {
+  position: absolute;
+  bottom: 0;
+  left: -9px;
+  fill: currentColor;
+  stroke: #05060f;
+  stroke-width: 0.8;
+  filter: drop-shadow(0 0 4px currentColor);
+  transform-origin: 50% 100%;
+  transition: transform 0.2s;
+}
+
+.globe-pin::after {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: -3px;
+  width: 12px;
+  height: 6px;
+  border-radius: 9999px;
+  border: 2px solid currentColor;
+  animation: pin-pulse 2s ease-out infinite;
+}
+
+.globe-pin--visited {
+  color: var(--color-comet);
+}
+
+.globe-pin--recommended {
+  color: var(--color-nebula);
+}
+
+.globe-pin:hover svg,
+.globe-pin--focused svg {
+  transform: scale(1.35);
+}
+
+.globe-pin--focused {
+  z-index: 1;
+  color: #fff;
+}
+
+.globe-pin__label {
+  position: absolute;
+  bottom: 52px;
+  left: 50%;
+  translate: -50% 0;
+  display: none;
+  flex-direction: column;
+  white-space: nowrap;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: #0b0d1fe6;
+  border: 1px solid #a78bfa66;
+  color: #e5e7ff;
+  font-size: 13px;
+  text-align: left;
+}
+
+.globe-pin__label span {
+  color: #c4b5fd;
+}
+
+.globe-pin:hover .globe-pin__label,
+.globe-pin--focused .globe-pin__label {
+  display: flex;
+}
+
+@keyframes pin-pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+.starfield {
+  background:
+    radial-gradient(ellipse at 20% 10%, #2a1b5c 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 90%, #4a1240 0%, transparent 45%),
+    url('/textures/night-sky.png') center / cover,
+    var(--color-space-950);
+}
