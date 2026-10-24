@@ -1,9 +1,7 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
 import type { Restaurant } from '../api/client'
-import { useLogVisit, useRestaurantSearch } from '../api/queries'
-import { useUser } from '../auth/session'
-import { readLiked } from '../lib/liked'
+import { useLikedRecommendations, useLogVisit, useRestaurantSearch } from '../api/queries'
 import { RestaurantSummary } from '../components/RestaurantSummary'
 import { Button, ErrorNote, Input, Muted, Panel } from '../components/ui'
 import { todayIso } from '../lib/format'
@@ -17,9 +15,7 @@ export function LogVisitPanel() {
   const [submitted, setSubmitted] = useState({ cuisine: '', location: '' })
   const [picked, setPicked] = useState<Restaurant | null>(null)
   const search = useRestaurantSearch(submitted.cuisine, submitted.location)
-  const user = useUser()
-  // Re-read whenever we return to the list, so a just-logged pick has dropped off.
-  const liked = useMemo(() => (picked ? [] : readLiked(user.id)), [picked, user.id])
+  const liked = (useLikedRecommendations().data ?? []).map((rec) => rec.restaurant)
 
   const runSearch = (e: FormEvent) => {
     e.preventDefault()

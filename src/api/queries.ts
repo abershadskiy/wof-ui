@@ -1,13 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { useUser } from '../auth/session'
-import { addLiked, removeLiked } from '../lib/liked'
 import { api, call, type Action, type Recommendation, type VisitCreate } from './client'
 
 const keys = {
   visits: (uid: number) => ['visits', uid] as const,
   preferences: (uid: number) => ['preferences', uid] as const,
   discover: (uid: number) => ['discover', uid] as const,
+  liked: (uid: number) => ['liked', uid] as const,
   search: (cuisine: string, location: string) => ['search', cuisine.toLowerCase(), location.toLowerCase()] as const,
 }
 
@@ -24,6 +24,16 @@ export function usePreferences() {
   return useQuery({
     queryKey: keys.preferences(id),
     queryFn: () => call(api.GET('/v1/users/{user_id}/preferences', { params: { path: { user_id: id } } })),
+  })
+}
+
+// Liked recommendations not visited yet. Logging a visit drops a restaurant off this list.
+export function useLikedRecommendations() {
+  const { id } = useUser()
+  return useQuery({
+    queryKey: keys.liked(id),
+    queryFn: () =>
+      call(api.GET('/v1/users/{user_id}/recommendations', { params: { path: { user_id: id }, query: { action: 'like' } } })),
   })
 }
 
@@ -69,9 +79,7 @@ export function useReactToRecommendation() {
       return { previous }
     },
     onError: (_err, _vars, context) => qc.setQueryData(key, context?.previous),
-    onSuccess: (_updated, { rec, action }) => {
-      if (action === 'like') addLiked(id, rec.restaurant)
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: keys.liked(id) }),
   })
 }
 
@@ -82,11 +90,11 @@ export function useLogVisit() {
     mutationFn: (visit: VisitCreate) =>
       call(api.POST('/v1/users/{user_id}/visits', { params: { path: { user_id: id } }, body: visit })),
     onSuccess: (visit) => {
-      removeLiked(id, visit.restaurant_id)
       qc.setQueryData<Recommendation[]>(keys.discover(id), (recs) => recs?.filter((r) => r.restaurant.id !== visit.restaurant_id))
       return Promise.all([
         qc.invalidateQueries({ queryKey: keys.visits(id) }),
         qc.invalidateQueries({ queryKey: keys.preferences(id) }),
+        qc.invalidateQueries({ queryKey: keys.liked(id) }),
       ])
     },
   })

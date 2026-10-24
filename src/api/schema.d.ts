@@ -107,6 +107,24 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/users/{user_id}/visits/{visit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Visit */
+        delete: operations["delete_visit_v1_users__user_id__visits__visit_id__delete"];
+        options?: never;
+        head?: never;
+        /** Update Visit */
+        patch: operations["update_visit_v1_users__user_id__visits__visit_id__patch"];
+        trace?: never;
+    };
     "/v1/users/{user_id}/preferences": {
         parameters: {
             query?: never;
@@ -225,7 +243,7 @@ export interface components {
         };
         /** RecommendationAction */
         RecommendationAction: {
-            action: components["schemas"]["Action"];
+            action: components["schemas"]["Action"] | null;
         };
         /** Restaurant */
         Restaurant: {
@@ -233,14 +251,25 @@ export interface components {
             name: string;
             /** Cuisine */
             cuisine: string[];
-            /** Price Tier */
-            price_tier?: number | null;
+            /**
+             * Price Tier
+             * @default -1
+             */
+            price_tier: number;
             /** Place Id */
             place_id: string;
             /** Place Lat */
             place_lat: number;
             /** Place Long */
             place_long: number;
+            /** Address */
+            address?: string | null;
+            /** City */
+            city?: string | null;
+            /** Region */
+            region?: string | null;
+            /** Country */
+            country?: string | null;
             /** Id */
             id: number;
         };
@@ -309,6 +338,15 @@ export interface components {
              * Format: date
              */
             date: string;
+            /** Rating */
+            rating?: number | null;
+            /** Notes */
+            notes?: string | null;
+        };
+        /** VisitUpdate */
+        VisitUpdate: {
+            /** Date */
+            date?: string | null;
             /** Rating */
             rating?: number | null;
             /** Notes */
@@ -540,6 +578,72 @@ export interface operations {
             };
         };
     };
+    delete_visit_v1_users__user_id__visits__visit_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_visit_v1_users__user_id__visits__visit_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                visit_id: number;
+                user_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VisitUpdate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Visit"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_preferences_v1_users__user_id__preferences_get: {
         parameters: {
             query?: never;
@@ -573,7 +677,9 @@ export interface operations {
     };
     get_recommendations_v1_users__user_id__recommendations_get: {
         parameters: {
-            query?: never;
+            query?: {
+                action?: components["schemas"]["Action"] | null;
+            };
             header?: never;
             path: {
                 user_id: number;

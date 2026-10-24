@@ -36,7 +36,7 @@ describe('toApiError', () => {
 })
 
 describe('frameRestaurants', () => {
-  const at = (id: number, lat: number, lng: number) => ({ id, name: '', cuisine: [], place_id: '', place_lat: lat, place_long: lng })
+  const at = (id: number, lat: number, lng: number) => ({ id, name: '', cuisine: [], price_tier: -1, place_id: '', place_lat: lat, place_long: lng })
 
   it('centres on the spread and backs off far enough to fit it', () => {
     expect(frameRestaurants([at(1, 42.3, -71.1), at(2, 42.4, -71.0)])).toEqual({
@@ -54,7 +54,7 @@ describe('frameRestaurants', () => {
 })
 
 describe('buildPins', () => {
-  const restaurant = (id: number) => ({ id, name: `R${id}`, cuisine: [], price_tier: null, place_id: 'p', place_lat: 1, place_long: 2 })
+  const restaurant = (id: number) => ({ id, name: `R${id}`, cuisine: [], price_tier: -1, place_id: 'p', place_lat: 1, place_long: 2 })
   const visit = (id: number, date: string): Visit => ({ id, restaurant_id: 7, date, restaurant: restaurant(7) })
   const rec = (id: number): Recommendation => ({ id, restaurant: restaurant(id) })
 
